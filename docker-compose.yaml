@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+  minio:
+    image: 'bitnami/minio:latest'
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      - MINIO_ROOT_USER=minio-root-user
+      - MINIO_ROOT_PASSWORD=minio-root-password
+      - MINIO_DEFAULT_BUCKETS=test
+  azurite:
+    image: 'mcr.microsoft.com/azure-storage/azurite:latest'
+    ports:
+      - 10000:10000
+  azurite-bootstrap:
+    image: mcr.microsoft.com/azure-cli
+    environment:
+      - AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;
+  postgresql:
+    image: 'bitnami/postgresql:latest'
+    environment:
+      - POSTGRESQL_USERNAME=my_user
+      - POSTGRESQL_PASSWORD=password123
+      - POSTGRESQL_DATABASE=my_database
+    ports:
+      - '5432:5432'
+  opendal:
+    build:
+      context: .
+    command: mix test --exclude docker-compose
